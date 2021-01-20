@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    volumes:
+      - ./www/media:/app/www/media
+      - ./www/:/app/www/
+    command: python3 app.py
+    ports:
+      - "8080:8080"
+  
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf
+      - ./www/media:/www/media
+      - ./www/:/www/
+      - ./dh-param/dhparam-2048.pem:/etc/ssl/certs/dhparam-2048.pem
+      - /docker-volumes/etc/letsencrypt/live/yesdogsyay.ga/fullchain.pem:/etc/letsencrypt/live/yesdogsyay.ga/fullchain.pem
+      - /docker-volumes/etc/letsencrypt/live/yesdogsyay.ga/privkey.pem:/etc/letsencrypt/live/yesdogsyay.ga/privkey.pem
+    depends_on:
+      - web
+    ports:
+      - "80:80"
+      - "443:443"
+
+
